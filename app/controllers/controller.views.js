@@ -153,6 +153,153 @@ export const postCrearUsuario = async (req, res) => {
 
 };
 
+// VISTA 5: EDITAR REGISTRO
+// ============================================
+
+// GET /usuarios/editar/:id - Muestra formulario de edición
+export const getEditarUsuario = async (req, res) => {
+
+    const { id } = req.params;
+
+    
+
+    try {
+
+        const response = await fetch(`${API_URL}/usuarios/${id}`, {
+
+            headers: {
+
+                "Authorization": `Bearer ${req.session.token}`
+
+            }
+
+        });
+
+
+        if (!response.ok) {
+
+            return res.redirect("/usuarios");
+
+        }
+
+
+        const usuario = await response.json();
+
+        res.render("editar", { usuario, error: null });
+
+
+    } catch (error) {
+
+        console.error("Error:", error);
+
+        res.redirect("/usuarios");
+
+    }
+
+};
+
+
+// POST /usuarios/editar - Procesa la actualización
+export const postEditarUsuario = async (req, res) => {
+
+    const { id, nombre, email } = req.body;
+
+    
+
+    try {
+
+        const response = await fetch(`${API_URL}/usuarios/${id}`, {
+
+            method: "PUT",
+
+            headers: {
+
+                "Content-Type": "application/json",
+
+                "Authorization": `Bearer ${req.session.token}`
+
+            },
+
+            body: JSON.stringify({ nombre, email })
+
+        });
+
+
+        if (!response.ok) {
+
+            const data = await response.json();
+
+            const usuario = { id, nombre, email };
+
+            return res.render("editar", { usuario, error: data.message || "Error al actualizar" });
+
+        }
+
+
+        res.redirect("/usuarios");
+
+
+    } catch (error) {
+
+        console.error("Error:", error);
+
+        const usuario = { id, nombre, email };
+
+        res.render("editar", { usuario, error: "Error de conexión" });
+
+    }
+
+};
+
+// VISTA 6: ELIMINAR REGISTRO
+// ============================================
+
+/**
+ * POST /usuarios/eliminar - Elimina un usuario
+ * Nota: Usamos POST en lugar de DELETE porque los formularios HTML
+ * solo soportan GET y POST. El servidor internamente usa DELETE.
+ */
+export const postEliminarUsuario = async (req, res) => {
+
+    const { id } = req.body;
+
+    
+
+    try {
+
+        const response = await fetch(`${API_URL}/usuarios/${id}`, {
+
+            method: "DELETE",
+
+            headers: {
+
+                "Authorization": `Bearer ${req.session.token}`
+
+            }
+
+        });
+
+
+        if (!response.ok) {
+
+            console.error("Error al eliminar usuario");
+
+        }
+
+
+        res.redirect("/usuarios");
+
+
+    } catch (error) {
+
+        console.error("Error:", error);
+
+        res.redirect("/usuarios");
+
+    }
+
+};
+
 // GET /logout - Cierra la sesión
 export const logout = (req, res) => {
 

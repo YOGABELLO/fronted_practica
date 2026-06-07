@@ -1,4 +1,4 @@
-**
+/**
  * Middleware para verificar si existe una sesión activa
  * Este middleware es diferente al del backend:
  * - Aquí verificamos req.session.token (sesión del servidor)
